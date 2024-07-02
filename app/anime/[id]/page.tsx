@@ -1,13 +1,16 @@
+import { Episodes } from "@/components/anime/Episodes";
 import InfoTab from "@/components/anime/Tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { getAnime } from "@/lib/anime";
+import { getAnime, getEpisodes } from "@/lib/anime";
 import { PlayCircle, PlayIcon } from "lucide-react";
 import Image from "next/image";
 import { use } from "react";
 
 export default function Info({ params }: { params: { id: string } }) {
-  const anime = use(getAnime(params.id));
+  const [anime, episodes] = use(
+    Promise.all([getAnime(params.id), getEpisodes(params.id)])
+  );
 
   return (
     <div>
@@ -69,6 +72,9 @@ export default function Info({ params }: { params: { id: string } }) {
       </div>
       <div className="mt-40">
         <InfoTab info={anime!} />
+      </div>
+      <div className="mt-10">
+        <Episodes episodes={episodes!} id={params.id} info={anime!} />
       </div>
     </div>
   );
