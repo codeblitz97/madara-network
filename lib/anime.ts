@@ -1,3 +1,4 @@
+import { ProviderData } from "@/app/api/episodes/[id]/route";
 import { IAnimeMedia } from "./infoType";
 
 interface MediaCoverImage {
@@ -261,6 +262,24 @@ interface Anizip {
     thetvdb_id: number;
     imdb_id: string;
     themoviedb_id: number;
+  };
+}
+
+export interface SiteDetail {
+  identifier: string | number;
+  image: string;
+  malId: number;
+  aniId: number;
+  page: string;
+  title: string;
+  type: string;
+  url: string;
+  external?: boolean;
+}
+
+export interface Sites {
+  [key: string]: {
+    [key: string]: SiteDetail;
   };
 }
 
@@ -533,7 +552,7 @@ interface Mappings {
       };
     };
   };
-  malsync: {
+  malSync: {
     id: number;
     type: string;
     title: string;
@@ -541,18 +560,7 @@ interface Mappings {
     total: number;
     image: string;
     malId: number;
-    Sites: {
-      [key: string]: {
-        identifier: string;
-        image: string;
-        malId: number;
-        aniId: number;
-        page: string;
-        title: string;
-        type: string;
-        url: string;
-      };
-    };
+    Sites: Sites;
   };
 }
 
@@ -954,6 +962,16 @@ export const getAnime = async (
       ...res1,
       ...res2,
     } as IAnimeMedia & Anime;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const getEpisodes = async (id: string) => {
+  try {
+    const res = await fetch(`${process.env.DOMAIN}/api/episodes/${id}`);
+
+    return (await res.json()) as ProviderData[];
   } catch (error) {
     console.error(error);
   }
