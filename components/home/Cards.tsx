@@ -17,7 +17,7 @@ export default function HomeCards({ trending }: { trending: Media[] }) {
         opts={{
           align: "start",
         }}
-        className="w-full max-w-[1390px] mx-auto group"
+        className="w-full min-w-[1390px] max-w-[1390px] mx-auto group"
       >
         <CarouselContent className="-ml-1">
           {trending.map((anime) => (
