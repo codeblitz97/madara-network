@@ -9,13 +9,13 @@ import { PlayCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Hero({ trending }: { trending: Media[] }) {
-  const [anime, setAnime] = useState<Media | null>(null);
-  const [trailer, setTrailer] = useState<any>(null);
+  const [anime, setAnime] = useState<Media | null>();
+  const [trailer, setTrailer] = useState<any>();
 
   useEffect(() => {
     const randomAnime = trending[Math.floor(Math.random() * trending.length)];
     setAnime(randomAnime);
-  }, [trending]);
+  }, [trending, setAnime]);
 
   useEffect(() => {
     async function fetchTrailer(trailerId: string) {
@@ -37,10 +37,10 @@ export default function Hero({ trending }: { trending: Media[] }) {
     if (anime?.trailer) {
       fetchTrailer(anime.trailer.id);
     }
-  }, [anime?.trailer]);
+  }, [anime?.trailer, setTrailer]);
 
   return (
-    <div className="static">
+    <div className="h-[500px] w-full">
       <div className="relative">
         <AnimatePresence>
           {trailer && trailer.url ? (
