@@ -4,37 +4,42 @@ import { Media } from "@/lib/anime";
 import { Link, Tooltip } from "@nextui-org/react";
 import Image from "next/image";
 import { Badge } from "../ui/badge";
-import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
 
 export const Card = ({ anime }: { anime: Media }) => {
   const [trailer, setTrailer] = useState<any>(null);
+  const [isHovered, setIsHovered] = useState(false);
 
-  useEffect(() => {
-    async function fetchTrailer(trailerId: string) {
-      try {
-        const response = await fetch(
-          `https://pipedapi.kavin.rocks/streams/${trailerId}`
-        );
-        const { videoStreams } = await response.json();
-        const item = videoStreams.find(
-          (i: any) => i.quality === "1080p" && i.format === "WEBM"
-        );
-        setTrailer(item);
-      } catch (error) {
-        console.error("Error fetching trailer:", error);
-        setTrailer(undefined);
-      }
+  const fetchTrailer = async (trailerId: string) => {
+    try {
+      const response = await fetch(
+        `https://pipedapi.kavin.rocks/streams/${trailerId}`
+      );
+      const { videoStreams } = await response.json();
+      const item = videoStreams.find(
+        (i: any) => i.quality === "1080p" && i.format === "WEBM"
+      );
+      setTrailer(item);
+    } catch (error) {
+      console.error("Error fetching trailer:", error);
+      setTrailer(null);
     }
+  };
 
-    if (anime?.trailer) {
+  const handleTooltipOpenChange = (open: boolean) => {
+    setIsHovered(open);
+    if (open && anime?.trailer) {
       fetchTrailer(anime.trailer.id);
     }
-  }, [anime.trailer]);
+  };
 
   return (
     <div>
       <Tooltip
+        isOpen={isHovered}
+        onOpenChange={handleTooltipOpenChange}
+        closeDelay={0}
         content={
           <div className="p-2 flex flex-col items-start justify-center">
             <AnimatePresence>
@@ -58,6 +63,8 @@ export const Card = ({ anime }: { anime: Media }) => {
                 >
                   <Image
                     src={
+                      anime.mappings.thetvdb &&
+                      anime.mappings.thetvdb.artworks &&
                       anime.mappings.thetvdb.artworks.backgrounds.length! > 0
                         ? anime.mappings.thetvdb.artworks.backgrounds[0]
                         : anime.bannerImage
@@ -129,21 +136,14 @@ export const Card = ({ anime }: { anime: Media }) => {
 };
 
 function RenderVideo({ trailer }: Readonly<{ trailer: string }>) {
-  const [isPlaying, setIsPlaying] = useState(true);
-
-  const handleVideoEnded = () => {
-    setIsPlaying(true);
-  };
-
   return (
     <div className="flex items-center justify-center overflow-hidden min-h-[150px] min-w-[400px] max-h-[150px] max-w-[400px]">
       <video
         src={trailer as string}
         preload="auto"
+        autoPlay={true}
         loop={true}
-        autoPlay={isPlaying}
         muted
-        onEnded={handleVideoEnded}
         className="aspect-video rounded-lg object-cover min-h-[150px] min-w-[400px] max-h-[150px] max-w-[400px]"
       ></video>
     </div>
