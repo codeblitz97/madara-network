@@ -1,5 +1,6 @@
 import { ProviderData } from "@/app/api/episodes/[id]/route";
 import { IAnimeMedia } from "./infoType";
+import { ReturnS } from "@/app/api/getSources/[id]/route";
 
 interface MediaCoverImage {
   extraLarge: string;
@@ -974,5 +975,21 @@ export const getEpisodes = async (id: string) => {
     return (await res.json()) as ProviderData[];
   } catch (error) {
     console.error(error);
+  }
+};
+
+export const getSources = async (
+  id: string,
+  provider: string,
+  subType: "sub" | "dub"
+) => {
+  try {
+    const res = await fetch(
+      `${process.env.DOMAIN}/api/getSources/${id}?provider=${provider}&subType=${subType}`
+    );
+
+    return (await res.json()) as ReturnS;
+  } catch (e) {
+    console.error(e);
   }
 };
